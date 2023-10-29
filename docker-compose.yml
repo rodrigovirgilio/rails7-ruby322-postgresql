@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:15.4-alpine
+    volumes:
+      - rails7:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+    networks:
+      internal-net:
+
+  web:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - .:/rails7
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    links:
+      - db
+    networks:
+      internal-net:
+
+volumes:
+  rails7:
+
+networks:
+  internal-net:
+    name: rails7
